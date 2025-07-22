@@ -5,12 +5,16 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Modal from 'react-native-modal';
 import Header from '../components/header';
 import Slider from '@react-native-community/slider';
+import Toast from 'react-native-toast-message';
+
 
 export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
   const [seconds, setSeconds] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const[stars,setStars]=useState(0)
+  const[rations,setRations]=useState(0)
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
@@ -20,6 +24,13 @@ export default function MainPage() {
   const toggleModal = () => setModalVisible(!isModalVisible);
 
   const timer = (startMinutes) => {
+    const reward = [
+      { min: 1800, value: 1 },
+      { min: 3600, value: 2 },
+      { min: 5400, value: 3 },
+      { min: 7200, value: 4 },
+    ];
+
     
     setIsTimerRunning(true);
     let totalTime = startMinutes * 60;
@@ -37,6 +48,15 @@ export default function MainPage() {
         clearInterval(intervalRef.current);
         setIsTimerRunning(false);
         console.log("Doběhlo to");
+        for(const i of reward)
+        {
+          if(startMinutes*60>=i.min)
+          {
+            setStars(prev => prev + i.value);
+            setRations(prev => prev + i.value);
+          }
+        }
+
       }
     }, 1000);
   };
@@ -58,7 +78,13 @@ export default function MainPage() {
 
       if (appState.current === 'background' && nextAppState === 'active' && hasUserLeftDuringTimer.current) {
         // Návrat do aplikace
-        alert('Odešel jsi z appky');
+        Toast.show({
+          type: 'info',
+          text1: 'Pozor!',
+          text2: 'Odešel jsi z aplikace 👀',
+          position: 'top'
+        });
+        
         hasUserLeftDuringTimer.current = false
         
       }
@@ -74,7 +100,7 @@ export default function MainPage() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Header />
+        <Header rations={rations} stars={stars} />
       </View>
 
       <View style={styles.contentContainer}>
