@@ -1,26 +1,29 @@
 import { Pressable, StyleSheet, Text, View, AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function IntroPage()
+
+
+
+export default function LoginPage()
 {
-  const navigation = useNavigation();
+    
+    const navigation = useNavigation();
     return(
-      
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <Text style={{fontSize:30}}>Welcome to FocusZoo!</Text>
+                <Text style={{fontSize:30}}>Sign up and build your own ZOO! 🐾</Text>
             </View>
             <View style={styles.contentContainer}>
-                <Text style={{fontSize:24,}}>Improve your concentration and unlock new animals from all over the world.</Text>
-                <Text style={{fontSize:24,}}>Every moment you focus helps save one animal from poachers</Text>
+                <Text style={{fontSize:24}}>Save your progress, collect animals, and track your growth.</Text>
             </View>
             <View style={styles.footer}>
-                <Pressable style={styles.buttonPrimary} onPress={() => navigation.navigate('Intro2')}>
-                    <Text style={styles.buttonText}>NEXT</Text>
+                <Pressable style={styles.buttonPrimary} onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.buttonText}>LOGIN</Text>
+                </Pressable>
+                <Pressable style={styles.buttonSecondary} onPress={() => navigation.navigate('Main')}>
+                    <Text style={styles.buttonText}>CONTINU AS GUEST</Text>
                 </Pressable>
             </View>
-            
-            
         </View>
     );
 }
@@ -31,13 +34,14 @@ const styles = StyleSheet.create({
     alignItems:"center",    
   },
   headerContainer: {
-    paddingTop: 100,  
+    paddingTop: 100,
+    margin:40  
    
   },
   contentContainer: {
     flex: 1,
     alignItems: 'center',
-    paddingTop:75,
+    paddingTop:30,
     margin:30,
     gap:20,
     
@@ -50,6 +54,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     width: 200,
+    width:'95%',
+  },
+  buttonSecondary: {
+    backgroundColor: '#4FC3F7',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
     width:'95%',
   },
   

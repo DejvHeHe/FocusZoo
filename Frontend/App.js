@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import MainPage from './pages/MainPage';
-import Toast from 'react-native-toast-message';
 import IntroPage from './pages/IntroPage';
+import IntroPage2 from './pages/IntroPage2';
+import LoginPage from './pages/LoginPage';
+import Toast from 'react-native-toast-message';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  
   return (
-    <View style={styles.container}>
-        <IntroPage/>
-      
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Intro" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Intro" component={IntroPage} />
+        <Stack.Screen name="Intro2" component={IntroPage2} />
+        <Stack.Screen name="Login" component={LoginPage}/>
+        <Stack.Screen name="Main" component={MainPage} />
+      </Stack.Navigator>
       <Toast />
-      
-    </View>
+      <StatusBar style="auto" />
+    </NavigationContainer>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
