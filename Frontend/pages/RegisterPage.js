@@ -3,14 +3,14 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={{ fontSize: 30 }}>Log in</Text>
+        <Text style={{ fontSize: 30 }}>Sign in</Text>
       </View>
 
       <View style={styles.contentContainer}>
@@ -35,17 +35,27 @@ export default function LoginPage() {
             />
           </TouchableOpacity>
         </View>
+        <View style={styles.passwordInputContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder='Password again'
+            secureTextEntry={!passwordVisibility}
+          />
+          <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
+            <Ionicons
+              name={passwordVisibility ? 'eye-off' : 'eye'}
+              size={24}
+              color="#388E3C"
+            />
+          </TouchableOpacity>
+        </View>
 
-        <Pressable style={styles.buttonPrimary} >
-          <Text style={styles.buttonText}>Log in</Text>
+        <Pressable style={styles.buttonPrimary}>
+          <Text style={styles.buttonText}>Sign in</Text>
         </Pressable>
       </View>
 
-      <View style={styles.footer}>
-        <Pressable style={styles.buttonSecondary} onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.buttonText}>Create account</Text>
-        </Pressable>
-      </View>
+      
     </View>
   );
 }
