@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, Text, View, AppState } from 'react-native';
+import { Pressable, StyleSheet, Text, View, AppState,ScrollView } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Modal from 'react-native-modal';
 import Header from '../components/header';
 import Slider from '@react-native-community/slider';
 import Toast from 'react-native-toast-message';
+import AnimalPick from '../components/animalPicker';
+
+import animals from '../assets/animals_unlocked.json';
+
 
 
 export default function MainPage() {
@@ -155,8 +159,12 @@ export default function MainPage() {
         style={styles.modal}
       >
         <View style={styles.modalContent}>
-          {/* Obsah modalu */}
-        </View>
+          <ScrollView contentContainerStyle={styles.animalList}>
+            {animals.map((animal, index) => (
+              <AnimalPick key={index} name={animal.name} photo={animal.photo} />
+            ))}
+          </ScrollView>
+      </View>
       </Modal>
 
       <StatusBar style="auto" />
@@ -213,7 +221,21 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     minHeight: 300,
+    flexDirection: 'row',
+    flexWrap: 'wrap',            // umožní víc řádků
+    justifyContent: 'center',    // zarovná všechny boxy doprostřed
   },
+  animalList: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: 16, // pokud chceš mezeru mezi kartami (ne všude podporováno)
+},
+
+
+
+
   timeText: {
     fontSize: 30,
   },
