@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 
 // Ručně vytvořená mapa názvů → require()
 const imageMap = {
@@ -7,31 +7,49 @@ const imageMap = {
   dog: require('../assets/all_animals_photo/dog.jpg'),
 };
 
-export default function AnimalPick({ name, photo }) {
+export default function AnimalPick({ name, photo, time, cost,onClose, animalSet,animal}) {
+  const [isDisabled, setDisable] = useState(false);
+
+  useEffect(() => {
+    
+    setDisable(time < cost);
+  }, [time, cost]);
+
+  function PickAnimal() {
+    onClose()
+    animalSet()
+    
+  }
+
   return (
-    <View style={styles.container}>
-      
+    <Pressable
+      style={[
+        styles.container,
+        isDisabled && { opacity: 0.4 } // optické zneaktivnění
+      ]}
+      onPress={PickAnimal}
+      disabled={isDisabled}
+    >
       <Image
-        source={imageMap[photo]} // správně použitá mapa
+        source={imageMap[photo]}
         style={styles.image}
       />
       <Text style={styles.text}>{name}</Text>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-  width: 100,
-  alignItems: 'center',
-  margin: 10,
+    width: 100,
+    alignItems: 'center',
+    margin: 10,
   },
   image: {
     width: 80,
     height: 80,
     borderRadius: 10,
   },
-
   text: {
     fontSize: 16,
   },

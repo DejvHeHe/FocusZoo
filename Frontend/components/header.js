@@ -29,6 +29,8 @@ export default function Header({rations,stars}) {
               onBackdropPress={toggleModal}
               onSwipeComplete={toggleModal}
               swipeDirection="left"
+              animationIn="slideInLeft"
+              animationOut="slideOutLeft"
               style={{ margin: 0, justifyContent: 'flex-start',width:"50%"}}
             >
               <View style={styles.modalContent}>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, Text, View, AppState,ScrollView } from 'react-native';
+import { Pressable, StyleSheet, Text, View, AppState,ScrollView,Image } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Modal from 'react-native-modal';
 import Header from '../components/header';
@@ -10,7 +10,10 @@ import AnimalPick from '../components/animalPicker';
 
 import animals from '../assets/animals_unlocked.json';
 
-
+const imageMap = {
+  cat: require('../assets/all_animals_photo/cat.jpg'),
+  dog: require('../assets/all_animals_photo/dog.jpg'),
+};
 
 export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
@@ -19,6 +22,7 @@ export default function MainPage() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const[stars,setStars]=useState(0)
   const[rations,setRations]=useState(0)
+  const[animalPicked,setAnimal]=useState()
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
@@ -114,12 +118,28 @@ export default function MainPage() {
           fill={(minutes / 120) * 100}
           tintColor="#388E3C"
           backgroundColor="#C8E6C9"
+          
         >
           {
             () => (
-              <Text style={styles.timeText}>
-                {minutes}:{seconds.toString().padStart(2, '0')}
-              </Text>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                
+                <Text style={styles.timeText}>
+                  {minutes}:{seconds.toString().padStart(2, '0')}
+                </Text>
+                {animalPicked &&
+                <Image
+                  source={imageMap[animalPicked.photo]}
+                  style={{
+                    width: 200,
+                    height: 200,
+                    position: 'absolute',
+                    borderRadius: 100,
+                    opacity: 0.4,
+                  }}
+                />
+              }
+              </View>
             )
           }
         </AnimatedCircularProgress>
@@ -161,8 +181,18 @@ export default function MainPage() {
         <View style={styles.modalContent}>
           <ScrollView contentContainerStyle={styles.animalList}>
             {animals.map((animal, index) => (
-              <AnimalPick key={index} name={animal.name} photo={animal.photo} />
-            ))}
+                <AnimalPick
+                  key={index}
+                  name={animal.name}
+                  photo={animal.photo}
+                  time={minutes}
+                  cost={animal.cost}
+                  onClose={() => setModalVisible(false)} 
+                  animalSet={() => setAnimal(animal)}
+                  animal={animal}
+                />
+              ))}
+
           </ScrollView>
       </View>
       </Modal>
