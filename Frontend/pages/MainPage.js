@@ -7,6 +7,7 @@ import Header from '../components/header';
 import Slider from '@react-native-community/slider';
 import Toast from 'react-native-toast-message';
 import AnimalPick from '../components/animalPicker';
+import SaveAnimalModal from '../components/saveAnimalModal';
 
 import animals from '../assets/animals_unlocked.json';
 
@@ -19,10 +20,11 @@ export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
   const [seconds, setSeconds] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const[stars,setStars]=useState(0)
-  const[rations,setRations]=useState(0)
-  const[animalPicked,setAnimal]=useState()
+  const[stars,setStars]=useState(0);
+  const[rations,setRations]=useState(0);
+  const[animalPicked,setAnimal]=useState();
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
@@ -64,6 +66,8 @@ export default function MainPage() {
             setRations(prev => prev + i.value);
           }
         }
+        setAnimalSaveVisible(true);
+        
 
       }
     }, 1000);
@@ -146,9 +150,9 @@ export default function MainPage() {
 
         <Slider
           style={{ width: 250, height: 40 }}
-          minimumValue={30} // změněno z 1 na 30
+          minimumValue={animalPicked?animalPicked.cost:1} 
           maximumValue={120}
-          step={5} // změněno ze 1 na 5
+          step={5} 
           value={minutes}
           minimumTrackTintColor="#66BB6A"
           maximumTrackTintColor="#C8E6C9"
@@ -163,9 +167,13 @@ export default function MainPage() {
           <Text style={styles.buttonText}>CHOOSE ANIMAL</Text>
         </Pressable>
         <Pressable
-          style={styles.buttonPrimary}
+          style={[
+            styles.buttonPrimary,
+            (isTimerRunning || !animalPicked) && { opacity: 0.5 }
+          ]}
+
           onPress={() => timer(minutes)}
-          disabled={isTimerRunning}
+          disabled={isTimerRunning || !animalPicked}
         >
           <Text style={styles.buttonText}>START</Text>
         </Pressable>
@@ -196,6 +204,12 @@ export default function MainPage() {
           </ScrollView>
       </View>
       </Modal>
+      {isAnimalSaveVisible && (
+          <SaveAnimalModal
+            onClose={() => setAnimalSaveVisible(false)}
+            isAnimalSaveVisible={isAnimalSaveVisible}
+          />
+        )}
 
       <StatusBar style="auto" />
     </View>
