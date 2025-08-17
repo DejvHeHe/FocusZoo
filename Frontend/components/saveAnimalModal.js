@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
 import Modal from 'react-native-modal';
+import {saveData} from '../functions/storage/save';
 
-export default function SaveAnimalModal({ onClose, isAnimalSaveVisible }) {
+export default function SaveAnimalModal({ onClose, isAnimalSaveVisible, animalPicked }) {
   const [animalName, setAnimalName] = useState('');
+  async function handleSave()
+  {
+    const data={
+      type:animalPicked.name,
+      photo:animalPicked.photo,
+      name:animalName
+
+
+    }
+    await saveData('animals',data)
+    onClose()
+
+  }
+
+  
 
   return (
     <Modal 
@@ -20,7 +36,7 @@ export default function SaveAnimalModal({ onClose, isAnimalSaveVisible }) {
           onChangeText={setAnimalName} 
           placeholder="Enter name" 
         />
-        <Pressable style={styles.buttonPrimary} onPress={onClose}>
+        <Pressable style={styles.buttonPrimary} onPress={handleSave}>
           <Text style={styles.buttonText}>Save</Text>
         </Pressable>
       </View>

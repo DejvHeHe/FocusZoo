@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { getAnimalImage } from '../functions/imageMap';
 
-// Ručně vytvořená mapa názvů → require()
-const imageMap = {
-  cat: require('../assets/all_animals_photo/cat.jpg'),
-  dog: require('../assets/all_animals_photo/dog.jpg'),
-};
-
-export default function AnimalPick({ name, photo, time, cost,onClose, animalSet,animal}) {
+export default function AnimalPick({ name, photo, time, cost, onClose, animalSet, animal }) {
   const [isDisabled, setDisable] = useState(false);
 
   useEffect(() => {
-    
     setDisable(time < cost);
   }, [time, cost]);
 
   function PickAnimal() {
-    onClose()
-    animalSet()
-    
+    onClose();
+    animalSet();
   }
 
   return (
@@ -31,7 +24,7 @@ export default function AnimalPick({ name, photo, time, cost,onClose, animalSet,
       disabled={isDisabled}
     >
       <Image
-        source={imageMap[photo]}
+        source={getAnimalImage(photo)}   
         style={styles.image}
       />
       <Text style={styles.text}>{name}</Text>

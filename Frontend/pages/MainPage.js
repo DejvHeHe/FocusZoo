@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, Text, View, AppState,ScrollView,Image } from 'react-native';
+import { Pressable, StyleSheet, Text, View, AppState, ScrollView, Image } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Modal from 'react-native-modal';
 import Header from '../components/header';
@@ -9,12 +9,9 @@ import Toast from 'react-native-toast-message';
 import AnimalPick from '../components/animalPicker';
 import SaveAnimalModal from '../components/saveAnimalModal';
 
-import animals from '../assets/animals_unlocked.json';
 
-const imageMap = {
-  cat: require('../assets/all_animals_photo/cat.jpg'),
-  dog: require('../assets/all_animals_photo/dog.jpg'),
-};
+import animals from '../assets/animals_unlocked.json';
+import { getAnimalImage } from '../functions/imageMap'; // ✅ import helperu
 
 export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
@@ -22,14 +19,13 @@ export default function MainPage() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const[stars,setStars]=useState(0);
-  const[rations,setRations]=useState(0);
-  const[animalPicked,setAnimal]=useState();
+  const [stars, setStars] = useState(0);
+  const [rations, setRations] = useState(0);
+  const [animalPicked, setAnimal] = useState();
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
   const hasUserLeftDuringTimer = useRef(false);
-
 
   const toggleModal = () => setModalVisible(!isModalVisible);
 
@@ -41,7 +37,6 @@ export default function MainPage() {
       { min: 7200, value: 4 },
     ];
 
-    
     setIsTimerRunning(true);
     let totalTime = startMinutes * 60;
 
@@ -57,18 +52,14 @@ export default function MainPage() {
       if (totalTime <= 0) {
         clearInterval(intervalRef.current);
         setIsTimerRunning(false);
-        console.log("Doběhlo to");
-        for(const i of reward)
-        {
-          if(startMinutes*60>=i.min)
-          {
+
+        for (const i of reward) {
+          if (startMinutes * 60 >= i.min) {
             setStars(prev => prev + i.value);
             setRations(prev => prev + i.value);
           }
         }
         setAnimalSaveVisible(true);
-        
-
       }
     }, 1000);
   };
@@ -81,24 +72,20 @@ export default function MainPage() {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
           setIsTimerRunning(false);
-          hasUserLeftDuringTimer.current=true;
+          hasUserLeftDuringTimer.current = true;
           setMinutes(30);
           setSeconds(0);
-          console.log('Timer zrušen, protože uživatel opustil aplikaci');
         }
       }
 
       if (appState.current === 'background' && nextAppState === 'active' && hasUserLeftDuringTimer.current) {
-        // Návrat do aplikace
         Toast.show({
           type: 'info',
           text1: 'Pozor!',
           text2: 'Odešel jsi z aplikace 👀',
-          position: 'top'
+          position: 'top',
         });
-        
-        hasUserLeftDuringTimer.current = false
-        
+        hasUserLeftDuringTimer.current = false;
       }
 
       appState.current = nextAppState;
@@ -122,18 +109,15 @@ export default function MainPage() {
           fill={(minutes / 120) * 100}
           tintColor="#388E3C"
           backgroundColor="#C8E6C9"
-          
         >
-          {
-            () => (
-              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                
-                <Text style={styles.timeText}>
-                  {minutes}:{seconds.toString().padStart(2, '0')}
-                </Text>
-                {animalPicked &&
+          {() => (
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={styles.timeText}>
+                {minutes}:{seconds.toString().padStart(2, '0')}
+              </Text>
+              {animalPicked && (
                 <Image
-                  source={imageMap[animalPicked.photo]}
+                  source={getAnimalImage(animalPicked.photo)}   
                   style={{
                     width: 200,
                     height: 200,
@@ -142,23 +126,22 @@ export default function MainPage() {
                     opacity: 0.4,
                   }}
                 />
-              }
-              </View>
-            )
-          }
+              )}
+            </View>
+          )}
         </AnimatedCircularProgress>
 
         <Slider
           style={{ width: 250, height: 40 }}
-          minimumValue={animalPicked?animalPicked.cost:1} 
+          minimumValue={animalPicked ? animalPicked.cost : 1}
           maximumValue={120}
-          step={5} 
+          step={5}
           value={minutes}
           minimumTrackTintColor="#66BB6A"
           maximumTrackTintColor="#C8E6C9"
           thumbTintColor="#388E3C"
           onValueChange={setMinutes}
-          disabled={isTimerRunning} // deaktivuje slider při běžícím timeru
+          disabled={isTimerRunning}
         />
       </View>
 
@@ -169,9 +152,8 @@ export default function MainPage() {
         <Pressable
           style={[
             styles.buttonPrimary,
-            (isTimerRunning || !animalPicked) && { opacity: 0.5 }
+            (isTimerRunning || !animalPicked) && { opacity: 0.5 },
           ]}
-
           onPress={() => timer(minutes)}
           disabled={isTimerRunning || !animalPicked}
         >
@@ -189,27 +171,28 @@ export default function MainPage() {
         <View style={styles.modalContent}>
           <ScrollView contentContainerStyle={styles.animalList}>
             {animals.map((animal, index) => (
-                <AnimalPick
-                  key={index}
-                  name={animal.name}
-                  photo={animal.photo}
-                  time={minutes}
-                  cost={animal.cost}
-                  onClose={() => setModalVisible(false)} 
-                  animalSet={() => setAnimal(animal)}
-                  animal={animal}
-                />
-              ))}
-
+              <AnimalPick
+                key={index}
+                name={animal.name}
+                photo={animal.photo}
+                time={minutes}
+                cost={animal.cost}
+                onClose={() => setModalVisible(false)}
+                animalSet={() => setAnimal(animal)}
+                animal={animal}
+              />
+            ))}
           </ScrollView>
-      </View>
+        </View>
       </Modal>
+
       {isAnimalSaveVisible && (
-          <SaveAnimalModal
-            onClose={() => setAnimalSaveVisible(false)}
-            isAnimalSaveVisible={isAnimalSaveVisible}
-          />
-        )}
+        <SaveAnimalModal
+          onClose={() => setAnimalSaveVisible(false)}
+          isAnimalSaveVisible={isAnimalSaveVisible}
+          animalPicked={animalPicked}
+        />
+      )}
 
       <StatusBar style="auto" />
     </View>
@@ -266,20 +249,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     minHeight: 300,
     flexDirection: 'row',
-    flexWrap: 'wrap',            // umožní víc řádků
-    justifyContent: 'center',    // zarovná všechny boxy doprostřed
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   animalList: {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: 16, // pokud chceš mezeru mezi kartami (ne všude podporováno)
-},
-
-
-
-
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
   timeText: {
     fontSize: 30,
   },

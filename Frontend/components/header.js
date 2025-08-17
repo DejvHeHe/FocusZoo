@@ -1,11 +1,13 @@
 import React,{useState}from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions,Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions,Text,Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Header({rations,stars}) {
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => setModalVisible(!isModalVisible);
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* Ikony vlevo */}
@@ -34,7 +36,9 @@ export default function Header({rations,stars}) {
               style={{ margin: 0, justifyContent: 'flex-start',width:"50%"}}
             >
               <View style={styles.modalContent}>
-                {/* Obsah modalu */}
+                <Pressable onPress={() => navigation.navigate('MyAnimals')}>
+                  <Text>My animals</Text>
+                </Pressable>
               </View>
       </Modal>
     </View>
