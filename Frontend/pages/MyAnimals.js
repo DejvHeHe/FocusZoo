@@ -4,7 +4,6 @@ import Animal from '../components/myAnimal';
 import { loadData } from '../functions/storage/loadMyAnimals';
 import Header from '../components/header';
 
-
 export default function MyAnimals() {
   const [animals, setAnimals] = useState([]);
   
@@ -26,10 +25,9 @@ export default function MyAnimals() {
       <Text style={styles.text}>MY ANIMALS</Text>
       <ScrollView 
         style={styles.content}
-        horizontal={true}      // 👈 důležité
-        showsHorizontalScrollIndicator={false} // volitelné, schová scrollbar
+        showsVerticalScrollIndicator={false} // ✅ vertical scroll
       >
-        <View style={styles.row}>
+        <View style={styles.grid}>
           {Array.isArray(animals) && animals.map((animal, index) => (
             <Animal
               key={index}
@@ -46,25 +44,28 @@ export default function MyAnimals() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    margin: 10,
     backgroundColor: '#E8F5E9',
     width: '100%',
   },
   headerContainer: {
-    paddingTop: 40,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
   },
   text: {
-    marginTop: '10%',
+    marginTop: 15,
+    marginBottom: 30,
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
   },
   content: {
-    marginTop: 20,
+    flex: 1,
+    paddingHorizontal: 10,
   },
-  row: {
-    flexDirection: 'row',  // 👈 vykreslí je vedle sebe
-    alignItems: 'center',
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',             // ✅ umožní více řádků
+    justifyContent: 'space-between', // ✅ rovnoměrně rozdělí do řádku
   },
 });

@@ -20,7 +20,6 @@ export default function MainPage() {
   const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [stars, setStars] = useState(0);
-  const [rations, setRations] = useState(0);
   const [animalPicked, setAnimal] = useState();
 
   const appState = useRef(AppState.currentState);
@@ -56,7 +55,6 @@ export default function MainPage() {
         for (const i of reward) {
           if (startMinutes * 60 >= i.min) {
             setStars(prev => prev + i.value);
-            setRations(prev => prev + i.value);
           }
         }
         setAnimalSaveVisible(true);
@@ -99,7 +97,7 @@ export default function MainPage() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Header rations={rations} stars={stars} />
+        <Header stars={stars} />
       </View>
 
       <View style={styles.contentContainer}>
@@ -173,7 +171,7 @@ export default function MainPage() {
             {animals.map((animal, index) => (
               <AnimalPick
                 key={index}
-                name={animal.name}
+                type={animal.type}
                 photo={animal.photo}
                 time={minutes}
                 cost={animal.cost}

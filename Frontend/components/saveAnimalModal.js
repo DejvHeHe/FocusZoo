@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
 import Modal from 'react-native-modal';
-import {saveData} from '../functions/storage/save';
+import {saveData} from '../functions/storage/saveAnimals';
+import { loadData } from '../functions/storage/loadMyAnimals';
 
 export default function SaveAnimalModal({ onClose, isAnimalSaveVisible, animalPicked }) {
   const [animalName, setAnimalName] = useState('');
   async function handleSave()
   {
+    const loadedData=await loadData('animals')
+    const today=new Date();
     const data={
-      type:animalPicked.name,
+      type:animalPicked.type,
       photo:animalPicked.photo,
-      name:animalName
+      name:animalName,
+      date:today
 
 
     }
-    await saveData('animals',data)
+    loadedData.push(data)
+    await saveData('animals',loadedData)
     onClose()
 
   }

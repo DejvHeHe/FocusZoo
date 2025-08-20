@@ -20,8 +20,7 @@ export default function Header({ rations, stars }) {
       <View style={styles.rightIcons}>
         <Text>{stars}</Text>
         <Ionicons name="star" size={24} color="#fbc02d" style={styles.icon} />
-        <Text>{rations}</Text>
-        <Image source={require('../assets/food-ration.png')} style={styles.image} />
+        
       </View>
 
       {/* modal */}

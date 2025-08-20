@@ -2,9 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function loadData(key) {
   try {
-    const data=[];
     const jsonValue = await AsyncStorage.getItem(key);
-    data.push(jsonValue != null ? JSON.parse(jsonValue) : []);
+    const data=jsonValue != null ? JSON.parse(jsonValue) : [];
     console.log("loaded data", data);
     return data;
   } catch (e) {

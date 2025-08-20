@@ -1,12 +1,12 @@
 [
   {
-    "name": "Cat",
+    "type": "Cat",
     "photo": "cat",
     "cost":1
   },
   {
-    "name": "Dog",
+    "type": "Dog",
     "photo": "dog",
-    "cost":40
+    "cost":1
   }
 ]

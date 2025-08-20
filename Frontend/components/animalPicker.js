@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import { getAnimalImage } from '../functions/imageMap';
 
-export default function AnimalPick({ name, photo, time, cost, onClose, animalSet, animal }) {
+export default function AnimalPick({ type, photo, time, cost, onClose, animalSet, animal }) {
   const [isDisabled, setDisable] = useState(false);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function AnimalPick({ name, photo, time, cost, onClose, animalSet
         source={getAnimalImage(photo)}   
         style={styles.image}
       />
-      <Text style={styles.text}>{name}</Text>
+      <Text style={styles.text}>{type}</Text>
     </Pressable>
   );
 }
