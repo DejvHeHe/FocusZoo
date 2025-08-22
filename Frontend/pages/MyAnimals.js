@@ -3,13 +3,14 @@ import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import Animal from '../components/myAnimal';
 import { loadData } from '../functions/storage/loadMyAnimals';
 import Header from '../components/header';
+import { useStars } from '../context/StarsContext';
 
 export default function MyAnimals() {
   const [animals, setAnimals] = useState([]);
-  
+  const { stars, setStars } = useStars();
   useEffect(() => {
     const fetchAnimals = async () => {
-      const loadedAnimals = await loadData('animals');
+      const loadedAnimals = await loadData('animals');      
       if (loadedAnimals) {
         setAnimals(loadedAnimals);
       }
@@ -33,6 +34,8 @@ export default function MyAnimals() {
               key={index}
               name={animal.name}
               photo={animal.photo}
+              type={animal.type}
+              date={animal.date}
             />
           ))}
         </View>

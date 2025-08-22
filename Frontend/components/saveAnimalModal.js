@@ -10,13 +10,16 @@ export default function SaveAnimalModal({ onClose, isAnimalSaveVisible, animalPi
   {
     const loadedData=await loadData('animals')
     const today=new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // měsíce jsou 0–11
+    const day = String(today.getDate()).padStart(2, '0');
+
+    const formattedDate = `${day}.${month}.${year}`;
     const data={
       type:animalPicked.type,
       photo:animalPicked.photo,
       name:animalName,
-      date:today
-
-
+      date:formattedDate
     }
     loadedData.push(data)
     await saveData('animals',loadedData)

@@ -1,3 +1,4 @@
+//MainPage.js
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, Text, View, AppState, ScrollView, Image } from 'react-native';
@@ -8,10 +9,10 @@ import Slider from '@react-native-community/slider';
 import Toast from 'react-native-toast-message';
 import AnimalPick from '../components/animalPicker';
 import SaveAnimalModal from '../components/saveAnimalModal';
-
-
+import { saveStars } from '../functions/storage/Stars';
 import animals from '../assets/animals_unlocked.json';
-import { getAnimalImage } from '../functions/imageMap'; // ✅ import helperu
+import { getAnimalImage } from '../functions/imageMap';
+import { useStars } from '../context/StarsContext'; // ✅ context
 
 export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
@@ -19,8 +20,9 @@ export default function MainPage() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [stars, setStars] = useState(0);
   const [animalPicked, setAnimal] = useState();
+
+  const { stars, setStars } = useStars(); // ✅ globální stars
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
@@ -29,8 +31,9 @@ export default function MainPage() {
   const toggleModal = () => setModalVisible(!isModalVisible);
 
   const timer = (startMinutes) => {
+    console.log("Timer started with startMinutes:", startMinutes);
     const reward = [
-      { min: 1800, value: 1 },
+      { min: 60, value: 1 },
       { min: 3600, value: 2 },
       { min: 5400, value: 3 },
       { min: 7200, value: 4 },
@@ -39,7 +42,7 @@ export default function MainPage() {
     setIsTimerRunning(true);
     let totalTime = startMinutes * 60;
 
-    intervalRef.current = setInterval(() => {
+    intervalRef.current = setInterval(async () => {
       totalTime--;
 
       const newMinutes = Math.floor(totalTime / 60);
@@ -51,10 +54,18 @@ export default function MainPage() {
       if (totalTime <= 0) {
         clearInterval(intervalRef.current);
         setIsTimerRunning(false);
+        console.log("Total time:", totalTime, "StartMinutes*60:", startMinutes*60);
 
         for (const i of reward) {
+          console.log("Checking reward:", i);
+
           if (startMinutes * 60 >= i.min) {
-            setStars(prev => prev + i.value);
+            setStars(prev => {
+              const updated = prev + i.value;
+              console.log("prev stars:", prev, "add value:", i.value);
+              saveStars(updated);
+              return updated;
+            });
           }
         }
         setAnimalSaveVisible(true);
@@ -65,7 +76,6 @@ export default function MainPage() {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (appState.current === 'active' && nextAppState === 'background') {
-        // Uživatel opustil aplikaci – zruš timer
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
@@ -97,7 +107,7 @@ export default function MainPage() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Header stars={stars} />
+        <Header />
       </View>
 
       <View style={styles.contentContainer}>
@@ -115,7 +125,7 @@ export default function MainPage() {
               </Text>
               {animalPicked && (
                 <Image
-                  source={getAnimalImage(animalPicked.photo)}   
+                  source={getAnimalImage(animalPicked.photo)}
                   style={{
                     width: 200,
                     height: 200,

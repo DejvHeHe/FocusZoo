@@ -1,12 +1,16 @@
-import React,{useState}from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions,Text,Pressable } from 'react-native';
+// Header.js
+import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
+import { useStars } from '../context/StarsContext'; // ✅ import context hooku
 
-export default function Header({ rations, stars }) {
+export default function Header() {
   const [isModalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
+  const { stars } = useStars(); // ✅ bereme stars přímo z contextu
+
   const toggleModal = () => setModalVisible(!isModalVisible);
 
   return (
@@ -20,7 +24,6 @@ export default function Header({ rations, stars }) {
       <View style={styles.rightIcons}>
         <Text>{stars}</Text>
         <Ionicons name="star" size={24} color="#fbc02d" style={styles.icon} />
-        
       </View>
 
       {/* modal */}
@@ -59,7 +62,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: { marginHorizontal: 6 },
-  image: { width: 32, height: 32 },
   modalContent: {
     backgroundColor: '#4FC3F7',
     padding: 20,
@@ -70,4 +72,3 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
-

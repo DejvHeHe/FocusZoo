@@ -1,61 +1,64 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, Pressable,TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, TextInput } from 'react-native';
 import Modal from 'react-native-modal';
 import { getAnimalImage } from '../functions/imageMap';
+import { Feather } from '@expo/vector-icons';
 
-
-export default function Animal({ name, photo }) {
-  const[isModalVisible,setModalVisible]=useState(false)
+export default function Animal({ name, photo, date, type }) {
+  const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => setModalVisible(!isModalVisible);
-  
+
   return (
-  <>
-    <Pressable style={styles.card} onPress={toggleModal}>
-      <Image
-        source={getAnimalImage(photo)}
-        style={styles.image}
-      />
-      <Text style={styles.text}>{name}</Text>
-    </Pressable>
+    <>
+      <Pressable style={styles.card} onPress={toggleModal}>
+        <Image source={getAnimalImage(photo)} style={styles.image} />
+        <Text style={styles.text}>{name}</Text>
+      </Pressable>
 
-    <Modal
-      isVisible={isModalVisible}
-      onBackdropPress={toggleModal}
-      onSwipeComplete={toggleModal}
-      swipeDirection="down"
-      style={styles.modal}
-    >
-       <View style={styles.modalContent}>
-          <TextInput
-              placeholder={name}
-          />
-          <Image
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={toggleModal}
+        onSwipeComplete={toggleModal}
+        swipeDirection="down"
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerText}>{name}</Text>
+            <Feather name="edit-2" size={18} color="black" style={styles.editIcon} />
+          </View>
+          <View style={styles.separator} />
 
-          />
-          <Text>Date of aquire:</Text>
-          <Text>Type:</Text>
+          {/* Image */}
+          <Image source={getAnimalImage(photo)} style={styles.modalImage} />
+
+          {/* Date */}
+          <View style={styles.separator} />
+          <Text style={styles.infoText}>Date: {date}</Text>
+
+          {/* Type */}
+          <View style={styles.separator} />
+          <Text style={styles.infoText}>Animal type: {type}</Text>
         </View>
-    </Modal>
-  </>
-);
-
-  
+      </Modal>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
   card: {
     borderWidth: 2,
-    borderColor: '#4CAF50', // zelený rámeček (můžeš změnit barvu)
+    borderColor: '#4CAF50',
     borderRadius: 12,
     padding: 10,
-    marginRight: 10, // mezera mezi kartičkami
-    alignItems: 'center',
-    backgroundColor: '#fff', // bílý podklad
-    shadowColor: '#000', // malý stín pro zvýraznění
+    marginRight: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // Android stín
-    width: '30%',   // 3 do řádku + mezery
+    elevation: 3,
+    width: '30%',
     marginBottom: 20,
     alignItems: 'center',
   },
@@ -71,17 +74,43 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
+    justifyContent: 'center',
+    margin: 20,
   },
   modalContent: {
     backgroundColor: '#4FC3F7',
     padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    minHeight: 300,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  header: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 6,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginRight: 6,
+  },
+  editIcon: {
+    marginLeft: 4,
+  },
+  separator: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
+    marginVertical: 8,
+  },
+  modalImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    marginVertical: 10,
+  },
+  infoText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
