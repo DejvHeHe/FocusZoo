@@ -31,7 +31,7 @@ export default function MainPage() {
   const toggleModal = () => setModalVisible(!isModalVisible);
 
   const timer = (startMinutes) => {
-    console.log("Timer started with startMinutes:", startMinutes);
+   
     const reward = [
       { min: 60, value: 1 },
       { min: 3600, value: 2 },
@@ -54,15 +54,14 @@ export default function MainPage() {
       if (totalTime <= 0) {
         clearInterval(intervalRef.current);
         setIsTimerRunning(false);
-        console.log("Total time:", totalTime, "StartMinutes*60:", startMinutes*60);
+        
 
         for (const i of reward) {
-          console.log("Checking reward:", i);
+          
 
           if (startMinutes * 60 >= i.min) {
             setStars(prev => {
               const updated = prev + i.value;
-              console.log("prev stars:", prev, "add value:", i.value);
               saveStars(updated);
               return updated;
             });
@@ -211,40 +210,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E8F5E9',
-    width: '100%',
   },
   headerContainer: {
     paddingTop: 40,
+    paddingHorizontal: 20,
     paddingBottom: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
   },
   contentContainer: {
-    flex: 1,
+    flex: 3,
     alignItems: 'center',
-    margin: 20,
-    padding: 80,
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
   buttonPrimary: {
     backgroundColor: '#388E3C',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 20,
+    borderRadius: 12,
+    marginTop: 15,
     width: 200,
+    alignItems: 'center',
   },
   buttonSecondary: {
     backgroundColor: '#4FC3F7',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 20,
+    borderRadius: 12,
+    marginTop: 15,
     width: 200,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    textAlign: 'center',
+    fontWeight: '600',
+  },
+  buttonsContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 20,
   },
   modal: {
     justifyContent: 'flex-end',
@@ -268,12 +273,8 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   timeText: {
-    fontSize: 30,
-  },
-  buttonsContainer: {
-    flex: 1,
-    alignItems: 'center',
-    margin: 50,
-    padding: 130,
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
