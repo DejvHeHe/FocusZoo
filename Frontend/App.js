@@ -7,6 +7,7 @@ import IntroPage2 from './pages/IntroPage2';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MyAnimals from './pages/MyAnimals';
+import UnlockAnimalsPage from './pages/UnlockAnimalPage';
 import Toast from 'react-native-toast-message';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -40,6 +41,7 @@ export default function App() {
           <Stack.Screen name="Register" component={RegisterPage}/>
           <Stack.Screen name="Main" component={MainPage} />
           <Stack.Screen name="MyAnimals" component={MyAnimals}/>
+          <Stack.Screen name="UnlockAnimal" component={UnlockAnimalsPage}/>
         </Stack.Navigator>
         <Toast />
         <StatusBar style="auto" />

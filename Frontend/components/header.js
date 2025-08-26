@@ -41,6 +41,9 @@ export default function Header() {
           <Pressable onPress={() => { toggleModal(); navigation.navigate('MyAnimals'); }}>
             <Text style={styles.menuItem}>🐾 My animals</Text>
           </Pressable>
+          <Pressable onPress={() => { toggleModal(); navigation.navigate('UnlockAnimal'); }}>
+            <Text style={styles.menuItem}>🔒 Unlock animals</Text>
+          </Pressable>
         </View>
       </Modal>
     </View>

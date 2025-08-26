@@ -1,0 +1,14 @@
+[
+  {
+    "type": "Rabbit",
+    "photo": "rabbit",
+    "cost":1,
+    "cost_to_unlock":5
+  },
+  {
+    "type": "Hamster",
+    "photo": "hamster",
+    "cost":1,
+    "cost_to_unlock":3
+  }
+]

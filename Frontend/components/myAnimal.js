@@ -1,3 +1,4 @@
+//myAnimal.js
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, Pressable, TextInput } from 'react-native';
 import Modal from 'react-native-modal';
