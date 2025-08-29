@@ -1,14 +1,16 @@
 [
   {
+    "id": "rabbit_001",
     "type": "Rabbit",
     "photo": "rabbit",
     "cost":1,
     "cost_to_unlock":5
   },
   {
+    "id": "hamster_001",
     "type": "Hamster",
     "photo": "hamster",
     "cost":1,
-    "cost_to_unlock":3
+    "cost_to_unlock":1
   }
 ]

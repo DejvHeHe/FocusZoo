@@ -1,4 +1,3 @@
-//MainPage.js
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, StyleSheet, Text, View, AppState, ScrollView, Image } from 'react-native';
@@ -10,9 +9,9 @@ import Toast from 'react-native-toast-message';
 import AnimalPick from '../components/animalPicker';
 import SaveAnimalModal from '../components/saveAnimalModal';
 import { saveStars } from '../functions/storage/Stars';
-import animals from '../assets/animals_unlocked.json';
 import { getAnimalImage } from '../functions/imageMap';
-import { useStars } from '../context/StarsContext'; // ✅ context
+import { useStars } from '../context/StarsContext';
+import { loadUnlockedAnimals } from '../functions/storage/unlockedAnimals';
 
 export default function MainPage() {
   const [minutes, setMinutes] = useState(30);
@@ -21,8 +20,9 @@ export default function MainPage() {
   const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [animalPicked, setAnimal] = useState();
+  const [animals, setAnimals] = useState([]);
 
-  const { stars, setStars } = useStars(); // ✅ globální stars
+  const { stars, setStars } = useStars();
 
   const appState = useRef(AppState.currentState);
   const intervalRef = useRef(null);
@@ -31,7 +31,6 @@ export default function MainPage() {
   const toggleModal = () => setModalVisible(!isModalVisible);
 
   const timer = (startMinutes) => {
-   
     const reward = [
       { min: 60, value: 1 },
       { min: 3600, value: 2 },
@@ -45,28 +44,22 @@ export default function MainPage() {
     intervalRef.current = setInterval(async () => {
       totalTime--;
 
-      const newMinutes = Math.floor(totalTime / 60);
-      const newSeconds = totalTime % 60;
-
-      setMinutes(newMinutes);
-      setSeconds(newSeconds);
+      setMinutes(Math.floor(totalTime / 60));
+      setSeconds(totalTime % 60);
 
       if (totalTime <= 0) {
         clearInterval(intervalRef.current);
         setIsTimerRunning(false);
-        
 
-        for (const i of reward) {
-          
-
-          if (startMinutes * 60 >= i.min) {
+        reward.forEach(r => {
+          if (startMinutes * 60 >= r.min) {
             setStars(prev => {
-              const updated = prev + i.value;
+              const updated = prev + r.value;
               saveStars(updated);
               return updated;
             });
           }
-        }
+        });
         setAnimalSaveVisible(true);
       }
     }, 1000);
@@ -98,9 +91,15 @@ export default function MainPage() {
       appState.current = nextAppState;
     });
 
-    return () => {
-      subscription.remove();
+    const loadAnimals = async () => {
+      const unlocked = await loadUnlockedAnimals();
+      console.log('Unlocked animals:', unlocked); // check here
+      setAnimals(unlocked);
     };
+
+    loadAnimals();
+
+    return () => subscription.remove();
   }, []);
 
   return (
@@ -119,21 +118,8 @@ export default function MainPage() {
         >
           {() => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={styles.timeText}>
-                {minutes}:{seconds.toString().padStart(2, '0')}
-              </Text>
-              {animalPicked && (
-                <Image
-                  source={getAnimalImage(animalPicked.photo)}
-                  style={{
-                    width: 200,
-                    height: 200,
-                    position: 'absolute',
-                    borderRadius: 100,
-                    opacity: 0.4,
-                  }}
-                />
-              )}
+              <Text style={styles.timeText}>{minutes}:{seconds.toString().padStart(2, '0')}</Text>
+              {animalPicked && <Image source={getAnimalImage(animalPicked.photo)} style={{width:200,height:200,position:'absolute',borderRadius:100,opacity:0.4}} />}
             </View>
           )}
         </AnimatedCircularProgress>
@@ -157,10 +143,7 @@ export default function MainPage() {
           <Text style={styles.buttonText}>CHOOSE ANIMAL</Text>
         </Pressable>
         <Pressable
-          style={[
-            styles.buttonPrimary,
-            (isTimerRunning || !animalPicked) && { opacity: 0.5 },
-          ]}
+          style={[styles.buttonPrimary, (isTimerRunning || !animalPicked) && { opacity: 0.5 }]}
           onPress={() => timer(minutes)}
           disabled={isTimerRunning || !animalPicked}
         >
@@ -207,74 +190,15 @@ export default function MainPage() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E8F5E9',
-  },
-  headerContainer: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-  },
-  contentContainer: {
-    flex: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
-  },
-  buttonPrimary: {
-    backgroundColor: '#388E3C',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginTop: 15,
-    width: 200,
-    alignItems: 'center',
-  },
-  buttonSecondary: {
-    backgroundColor: '#4FC3F7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginTop: 15,
-    width: 200,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonsContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingVertical: 20,
-  },
-  modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  modalContent: {
-    backgroundColor: '#4FC3F7',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    minHeight: 300,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  animalList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  timeText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#333',
-  },
+  container: { flex: 1, backgroundColor: '#E8F5E9' },
+  headerContainer: { paddingTop: 40, paddingHorizontal: 20, paddingBottom: 10 },
+  contentContainer: { flex: 3, alignItems: 'center', justifyContent: 'center', paddingVertical: 20 },
+  buttonPrimary: { backgroundColor: '#388E3C', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, marginTop: 15, width: 200, alignItems: 'center' },
+  buttonSecondary: { backgroundColor: '#4FC3F7', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, marginTop: 15, width: 200, alignItems: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  buttonsContainer: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingVertical: 20 },
+  modal: { justifyContent: 'flex-end', margin: 0 },
+  modalContent: { backgroundColor: '#4FC3F7', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, minHeight: 300, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
+  animalList: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: 16 },
+  timeText: { fontSize: 36, fontWeight: 'bold', color: '#333' },
 });

@@ -2,12 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import Header from '../components/header';
 import { useStars } from '../context/StarsContext';
-import animals from '../assets/animal._locked.json';
 import UnlockableAnimal from '../components/unlockableAnimal';
+import { loadLockedAnimals } from '../functions/storage/lockedAnimals';
 
 export default function UnlockAnimalsPage()
 {
+    const [animals,setAnimals]=useState([])
     const { stars, setStars } = useStars();
+
+    useEffect(() => {
+      const loadAnimals = async () => {
+        try {
+          const data = await loadLockedAnimals();
+          setAnimals(data);
+        } catch (e) {
+          console.error("Failed to load unlocked animals:", e);
+        }
+      };
+      loadAnimals();
+    }, []);
+
     return(
 
        <View style={styles.container}>
@@ -26,6 +40,8 @@ export default function UnlockAnimalsPage()
                               photo={animal.photo}
                               type={animal.type}
                               cost={animal.cost_to_unlock}
+                              id={animal.id}
+                              animal={animal}
                               
                             />
                           ))}

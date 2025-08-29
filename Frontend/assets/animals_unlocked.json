@@ -1,10 +1,12 @@
 [
   {
+    "id": "cat_001",
     "type": "Cat",
     "photo": "cat",
     "cost":1
   },
   {
+    "id": "dog_001",
     "type": "Dog",
     "photo": "dog",
     "cost":1

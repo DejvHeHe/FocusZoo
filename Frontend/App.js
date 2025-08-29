@@ -1,6 +1,5 @@
-import React,{useEffect} from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StatusBar, StyleSheet } from 'react-native';
 import MainPage from './pages/MainPage';
 import IntroPage from './pages/IntroPage';
 import IntroPage2 from './pages/IntroPage2';
@@ -11,25 +10,46 @@ import UnlockAnimalsPage from './pages/UnlockAnimalPage';
 import Toast from 'react-native-toast-message';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StarsProvider } from './context/StarsContext'; // náš context
+import { StarsProvider } from './context/StarsContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const animalsUnlocked = require('./assets/animals_unlocked.json');
+const animalsLocked = require('./assets/animals_locked.json');
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [storageReady, setStorageReady] = useState(false);
+
   useEffect(() => {
-    const clearStars = async () => {
+    const initStorage = async () => {
       try {
-        await AsyncStorage.removeItem('stars');
-        console.log('Stars byly vymazány z AsyncStorage.');
+        // Clear storage for testing (optional)
+        await AsyncStorage.removeItem('animalsLocked');
+        await AsyncStorage.removeItem('animalsUnlocked');
+
+        // Initialize locked animals if missing
+        const lockedJSON = await AsyncStorage.getItem('animalsLocked');
+        if (!lockedJSON) {
+          await AsyncStorage.setItem('animalsLocked', JSON.stringify(animalsLocked));
+        }
+
+        // Initialize unlocked animals if missing
+        const unlockedJSON = await AsyncStorage.getItem('animalsUnlocked');
+        if (!unlockedJSON) {
+          await AsyncStorage.setItem('animalsUnlocked', JSON.stringify(animalsUnlocked));
+        }
+
+        setStorageReady(true); // storage is ready
       } catch (e) {
-        console.error('Chyba při mazání stars:', e);
+        console.error("Storage init failed:", e);
       }
     };
 
-    clearStars();
+    initStorage();
   }, []);
+
+  if (!storageReady) return null; // wait until storage is ready
 
   return (
     <StarsProvider>

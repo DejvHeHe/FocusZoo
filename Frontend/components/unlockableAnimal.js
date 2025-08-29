@@ -3,8 +3,36 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import { getAnimalImage } from '../functions/imageMap';
 import { Feather } from '@expo/vector-icons';
+import { saveUnlockedAnimals } from '../functions/storage/unlockedAnimals';
+import { saveLockedAnimals } from '../functions/storage/lockedAnimals';
+import { useStars } from '../context/StarsContext';
+import Toast from 'react-native-toast-message';
 
-export default function UnlockableAnimal({ cost, type, photo, onUnlock }) {
+export default function UnlockableAnimal({ cost, type, photo,id, animal}) {
+  const { stars, setStars } = useStars();
+  const onUnlock = async () => {
+    if (stars >= cost) {
+      try {
+        await saveLockedAnimals(id);
+        await saveUnlockedAnimals(animal);
+        setStars(prev => prev - cost); // ✅ deduct stars
+
+        Toast.show({
+          type: 'success',
+          text1: `${type} unlocked!`,
+          position: 'top',
+        });
+      } catch (e) {
+        console.error('Error unlocking animal:', e);
+      }
+    } else {
+      Toast.show({
+        type: 'warning',
+        text1: 'You don’t have enough stars',
+        position: 'top',
+      });
+    }
+  };
   return (
     <Pressable style={styles.card} onPress={onUnlock}>
       {/* Animal image */}
