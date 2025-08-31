@@ -9,16 +9,18 @@ export default function UnlockAnimalsPage()
 {
     const [animals,setAnimals]=useState([])
     const { stars, setStars } = useStars();
-
-    useEffect(() => {
-      const loadAnimals = async () => {
+    const loadAnimals = async () => {
         try {
           const data = await loadLockedAnimals();
           setAnimals(data);
         } catch (e) {
           console.error("Failed to load unlocked animals:", e);
         }
-      };
+    };
+    useEffect(() => {
+      loadAnimals()
+      
+      
       loadAnimals();
     }, []);
 
@@ -42,6 +44,7 @@ export default function UnlockAnimalsPage()
                               cost={animal.cost_to_unlock}
                               id={animal.id}
                               animal={animal}
+                              loadAnimals={loadAnimals}
                               
                             />
                           ))}
