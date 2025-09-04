@@ -5,101 +5,52 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import Modal from 'react-native-modal';
 import Header from '../components/header';
 import Slider from '@react-native-community/slider';
-import Toast from 'react-native-toast-message';
 import AnimalPick from '../components/animalPicker';
 import SaveAnimalModal from '../components/saveAnimalModal';
-import { saveStars } from '../functions/storage/Stars';
 import { getAnimalImage } from '../functions/imageMap';
 import { useStars } from '../context/StarsContext';
 import { loadUnlockedAnimals } from '../functions/storage/unlockedAnimals';
+import useAppStateHandler from '../hooks/useAppStateHandler';
+import useTimer from '../hooks/useTimer';   
+import { REWARD_RULES } from '../constants/REWARD_RULES'; 
+
 
 export default function MainPage() {
-  const [minutes, setMinutes] = useState(30);
-  const [seconds, setSeconds] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [isAnimalSaveVisible, setAnimalSaveVisible] = useState(false);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [animalPicked, setAnimal] = useState();
   const [animals, setAnimals] = useState([]);
 
-  const { stars, setStars } = useStars();
+  const { setStars } = useStars();
 
   const appState = useRef(AppState.currentState);
-  const intervalRef = useRef(null);
   const hasUserLeftDuringTimer = useRef(false);
 
   const toggleModal = () => setModalVisible(!isModalVisible);
 
-  const timer = (startMinutes) => {
-    const reward = [
-      { min: 60, value: 1 },
-      { min: 3600, value: 2 },
-      { min: 5400, value: 3 },
-      { min: 7200, value: 4 },
-    ];
+  const {
+    minutes,
+    seconds,
+    isTimerRunning,
+    isAnimalSaveVisible,
+    setAnimalSaveVisible,
+    startTimer,
+    intervalRef,
+    setMinutes,
+    setSeconds,
+    setIsTimerRunning,
+  } = useTimer(setStars, REWARD_RULES); // ✅ renamed to useTimer
 
-    setIsTimerRunning(true);
-    let totalTime = startMinutes * 60;
-
-    intervalRef.current = setInterval(async () => {
-      totalTime--;
-
-      setMinutes(Math.floor(totalTime / 60));
-      setSeconds(totalTime % 60);
-
-      if (totalTime <= 0) {
-        clearInterval(intervalRef.current);
-        setIsTimerRunning(false);
-
-        reward.forEach(r => {
-          if (startMinutes * 60 >= r.min) {
-            setStars(prev => {
-              const updated = prev + r.value;
-              saveStars(updated);
-              return updated;
-            });
-          }
-        });
-        setAnimalSaveVisible(true);
-      }
-    }, 1000);
-  };
+  useAppStateHandler({
+    appState,
+    intervalRef,
+    setIsTimerRunning,
+    setMinutes,
+    setSeconds,
+    hasUserLeftDuringTimer,
+  });
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (appState.current === 'active' && nextAppState === 'background') {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          setIsTimerRunning(false);
-          hasUserLeftDuringTimer.current = true;
-          setMinutes(30);
-          setSeconds(0);
-        }
-      }
-
-      if (appState.current === 'background' && nextAppState === 'active' && hasUserLeftDuringTimer.current) {
-        Toast.show({
-          type: 'info',
-          text1: 'Pozor!',
-          text2: 'Odešel jsi z aplikace 👀',
-          position: 'top',
-        });
-        hasUserLeftDuringTimer.current = false;
-      }
-
-      appState.current = nextAppState;
-    });
-
-    const loadAnimals = async () => {
-      const unlocked = await loadUnlockedAnimals();
-      console.log('Unlocked animals:', unlocked); // check here
-      setAnimals(unlocked);
-    };
-
-    loadAnimals();
-
-    return () => subscription.remove();
+    loadUnlockedAnimals().then(setAnimals);
   }, []);
 
   return (
@@ -118,8 +69,21 @@ export default function MainPage() {
         >
           {() => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={styles.timeText}>{minutes}:{seconds.toString().padStart(2, '0')}</Text>
-              {animalPicked && <Image source={getAnimalImage(animalPicked.photo)} style={{width:200,height:200,position:'absolute',borderRadius:100,opacity:0.4}} />}
+              <Text style={styles.timeText}>
+                {minutes}:{seconds.toString().padStart(2, '0')}
+              </Text>
+              {animalPicked && (
+                <Image
+                  source={getAnimalImage(animalPicked.photo)}
+                  style={{
+                    width: 200,
+                    height: 200,
+                    position: 'absolute',
+                    borderRadius: 100,
+                    opacity: 0.4,
+                  }}
+                />
+              )}
             </View>
           )}
         </AnimatedCircularProgress>
@@ -144,7 +108,7 @@ export default function MainPage() {
         </Pressable>
         <Pressable
           style={[styles.buttonPrimary, (isTimerRunning || !animalPicked) && { opacity: 0.5 }]}
-          onPress={() => timer(minutes)}
+          onPress={() => startTimer(minutes)}
           disabled={isTimerRunning || !animalPicked}
         >
           <Text style={styles.buttonText}>START</Text>
