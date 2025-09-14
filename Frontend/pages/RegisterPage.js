@@ -2,10 +2,44 @@ import { Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from '
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { register } from '../functions/API';
+import Toast from 'react-native-toast-message';
+import { login } from '../functions/API';
 
 export default function RegisterPage() {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const navigation = useNavigation();
+  const [email,setEmail]=useState("");
+  const[password,setPassword]=useState("");
+  const[passwordAgain,setPasswordAgain]=useState("") 
+  const[registerFailed,setRegisterFailed]=useState(false)
+
+  const onRegister=async()=>
+  { 
+    if(password!==passwordAgain)
+    {
+      Toast.show({
+                type: 'error',
+                text1: `You password dont match`,
+                position: 'top',
+              });
+      setRegisterFailed(true);
+
+    }
+    else{
+      setRegisterFailed(false)
+      const data={
+        email:email,
+        password:password
+      }
+      await register(data);
+      await login(data);
+
+    }
+    
+
+
+  }
 
   return (
     <View style={styles.container}>
@@ -19,13 +53,17 @@ export default function RegisterPage() {
           placeholder='E-mail'
           keyboardType='email-address'
           autoCapitalize='none'
+          value={email}
+          onChange={e => setEmail(e.nativeEvent.text)}
         />
 
-        <View style={styles.passwordInputContainer}>
+        <View style={registerFailed?styles.passwordInputContainerFailed:styles.passwordInputContainer}>
           <TextInput
             style={styles.passwordInput}
             placeholder='Password'
             secureTextEntry={!passwordVisibility}
+            value={password}
+            onChange={e => setPassword(e.nativeEvent.text)}
           />
           <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
             <Ionicons
@@ -35,11 +73,13 @@ export default function RegisterPage() {
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.passwordInputContainer}>
+        <View style={registerFailed?styles.passwordInputContainerFailed:styles.passwordInputContainer}>
           <TextInput
             style={styles.passwordInput}
             placeholder='Password again'
             secureTextEntry={!passwordVisibility}
+            value={passwordAgain}
+            onChange={e => setPasswordAgain(e.nativeEvent.text)}
           />
           <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
             <Ionicons
@@ -50,7 +90,11 @@ export default function RegisterPage() {
           </TouchableOpacity>
         </View>
 
-        <Pressable style={styles.buttonPrimary}>
+        <Pressable 
+          style={styles.buttonPrimary}
+          onPress={onRegister}
+        
+        >
           <Text style={styles.buttonText}>Sign in</Text>
         </Pressable>
       </View>
@@ -102,6 +146,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     justifyContent: 'space-between',
+  },
+  passwordInputContainerFailed:{
+     flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fc0317',
+    borderRadius: 12,
+    width: '100%',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    justifyContent: 'space-between',
+
   },
   passwordInput: {
     flex: 1,

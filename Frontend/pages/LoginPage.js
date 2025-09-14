@@ -2,10 +2,22 @@ import { Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from '
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { login } from '../functions/API';
 
 export default function LoginPage() {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const navigation = useNavigation();
+  const [email,setEmail]=useState("");  
+  const[password,setPassword]=useState("");
+
+  const onLogin = async() =>
+  {
+    const data={
+      email:email,
+      password:password
+    }
+    await login(data);
+  }
 
   return (
     <View style={styles.container}>
@@ -19,6 +31,8 @@ export default function LoginPage() {
           placeholder='E-mail'
           keyboardType='email-address'
           autoCapitalize='none'
+          value={email}
+          onChange={e => setEmail(e.nativeEvent.text)}
         />
 
         <View style={styles.passwordInputContainer}>
@@ -26,6 +40,8 @@ export default function LoginPage() {
             style={styles.passwordInput}
             placeholder='Password'
             secureTextEntry={!passwordVisibility}
+            value={password}
+            onChange={e => setPassword(e.nativeEvent.text)}
           />
           <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
             <Ionicons

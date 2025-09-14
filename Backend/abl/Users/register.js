@@ -28,6 +28,16 @@ async function Register(req,res)
 
             });
         }
+        const re = /^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\sA-Za-z0-9])(?!.*\s).*$/;
+
+        if(!re.test(user.password))
+        {
+            return res.status(400).json({
+                code:"weakPassword",
+                message:"Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character. Spaces are not allowed."
+            });
+
+        }
         const registerUser=await usersDao.register(user)
         res.json(registerUser)
 
