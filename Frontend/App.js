@@ -12,6 +12,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StarsProvider } from './context/StarsContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PasswordResetPage from './pages/PasswordResetPage';
+
 
 const animalsUnlocked = require('./assets/animals_unlocked.json');
 const animalsLocked = require('./assets/animals_locked.json');
@@ -20,13 +22,24 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [storageReady, setStorageReady] = useState(false);
+  const [initialRouteName,setInitialRouteName]=useState("Main")
+  
 
   useEffect(() => {
     const initStorage = async () => {
       try {
         // Clear storage for testing (optional)
-        await AsyncStorage.removeItem('animalsLocked');
-        await AsyncStorage.removeItem('animalsUnlocked');
+        const token=await AsyncStorage.getItem("token")
+        const onBoarding=await AsyncStorage.getItem("onBoarding")
+        
+
+        if (!onBoarding) {
+          setInitialRouteName("Intro");
+        } else {
+          setInitialRouteName("Main");
+        }
+
+
 
         // Initialize locked animals if missing
         const lockedJSON = await AsyncStorage.getItem('animalsLocked');
@@ -54,14 +67,15 @@ export default function App() {
   return (
     <StarsProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Intro" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Intro"/*{initialRouteName}*/ screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Intro" component={IntroPage} />
-          <Stack.Screen name="Intro2" component={IntroPage2} />
+          <Stack.Screen name="Intro2" component={IntroPage2}  />
           <Stack.Screen name="Login" component={LoginPage}/>
           <Stack.Screen name="Register" component={RegisterPage}/>
           <Stack.Screen name="Main" component={MainPage} />
           <Stack.Screen name="MyAnimals" component={MyAnimals}/>
           <Stack.Screen name="UnlockAnimal" component={UnlockAnimalsPage}/>
+          <Stack.Screen name="PasswordReset" component={PasswordResetPage}/>
         </Stack.Navigator>
         <Toast />
         <StatusBar style="auto" />

@@ -40,7 +40,8 @@ async function register(user) {
     const userDoc = {
       email: user.email,
       passwordHash: hashedPassword,
-      createdAt: new Date()
+      createdAt: new Date(),
+    
     };
 
     const result = await client
@@ -107,7 +108,8 @@ async function findByEmail(email)//find by email
 module.exports = { 
   register,
   login,
-  findByEmail
+  findByEmail,
+
   
 
  };

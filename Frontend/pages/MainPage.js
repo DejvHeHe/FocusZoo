@@ -13,6 +13,8 @@ import { loadUnlockedAnimals } from '../functions/storage/unlockedAnimals';
 import useAppStateHandler from '../hooks/useAppStateHandler';
 import useTimer from '../hooks/useTimer';   
 import { REWARD_RULES } from '../constants/REWARD_RULES'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 export default function MainPage() {
@@ -48,9 +50,17 @@ export default function MainPage() {
     setSeconds,
     hasUserLeftDuringTimer,
   });
+  const setOnboarding = async () => {
+    const onboardingDone = await AsyncStorage.getItem("onBoarding");
+    if (!onboardingDone) {
+      await AsyncStorage.setItem("onBoarding", "true"); // store as string
+    }
+};
 
   useEffect(() => {
     loadUnlockedAnimals().then(setAnimals);
+    setOnboarding()
+   
   }, []);
 
   return (

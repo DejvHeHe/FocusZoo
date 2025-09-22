@@ -17,6 +17,7 @@ export default function LoginPage() {
       password:password
     }
     await login(data);
+    navigation.navigate("MainPage")
   }
 
   return (
@@ -52,7 +53,7 @@ export default function LoginPage() {
           </TouchableOpacity>
         </View>
 
-        <Pressable style={styles.buttonPrimary} >
+        <Pressable style={styles.buttonPrimary} onPress={onLogin}>
           <Text style={styles.buttonText}>Log in</Text>
         </Pressable>
       </View>
@@ -61,6 +62,9 @@ export default function LoginPage() {
         <Pressable style={styles.buttonSecondary} onPress={() => navigation.navigate('Register')}>
           <Text style={styles.buttonText}>Create account</Text>
         </Pressable>
+      </View>
+      <View style={styles.forgotPassword}>
+        <Text onPress={()=>navigation.navigate('PasswordReset')}>Forgot password?</Text>
       </View>
     </View>
   );
@@ -71,24 +75,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E8F5E9',
     alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: 50, // smaller padding for smaller screens
+    paddingHorizontal: 15,
   },
   headerContainer: {
-    paddingTop: 100,
-    margin: 40
+    marginBottom: 20,
+    alignItems: "center",
   },
   contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 60,
-    margin: 30,
-    gap: 30,
+    width: "100%",
+    maxWidth: 400, // caps width on larger devices
+    backgroundColor: 'white',
     borderWidth: 2,
     borderColor: '#388E3C',
     borderRadius: 12,
     padding: 20,
-    backgroundColor: 'white',
-    width: "90%",
-    
+    gap: 15,
+    alignItems: 'center',
   },
   input: {
     borderWidth: 2,
@@ -96,7 +100,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: "100%",
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 10,
+    fontSize: 16,
   },
   passwordInputContainer: {
     flexDirection: 'row',
@@ -106,36 +111,41 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: '100%',
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 10,
     justifyContent: 'space-between',
   },
   passwordInput: {
     flex: 1,
+    fontSize: 16,
   },
   buttonPrimary: {
     backgroundColor: '#388E3C',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 10,
-    marginTop: 20,
-    width: '95%',
+    marginTop: 15,
+    width: '100%',
   },
   buttonSecondary: {
     backgroundColor: '#4FC3F7',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 10,
-    marginTop: 20,
-    width: '95%',
+    marginTop: 10,
+    width: '100%',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
+    fontWeight: "600",
   },
   footer: {
-    paddingBottom: 70,
     width: '100%',
+    alignItems: "center",
+    marginTop: 20,
+  },
+  forgotPassword: {
+    marginTop: 10,
     alignItems: "center",
   },
 });
+
