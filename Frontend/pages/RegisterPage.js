@@ -26,9 +26,25 @@ export default function RegisterPage() {
 
     setRegisterFailed(false);
     const data = { email, password };
-    await register(data);
-    await login(data);
-    navigation.navigate('Main');
+    const registerResult=await register(data);
+    console.log(registerResult)
+    if(registerResult.error)
+    {     
+        Toast.show({
+        type:"error",
+        text1:registerResult.message,
+        position:"top",    
+        })      
+      
+
+    }
+      
+    else{
+      const loginResult=await login(data);
+      navigation.navigate('Main');
+
+    }
+    
   }
 
   return (

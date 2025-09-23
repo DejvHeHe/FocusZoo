@@ -52,7 +52,7 @@ async function register(user) {
     return { success: true, userId: result.insertedId };
   } catch (err) {
     if (err.code === 11000) {
-      return { success: false, error: "Email already registered." };
+      return { success: false, error: "Email already registered." ,code: "EmailAlreadyRegistered"};
     }
     console.error("Registration error:", err);
     return { success: false, error: "Something went wrong." };

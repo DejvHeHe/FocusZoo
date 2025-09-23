@@ -1,15 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 export async function register(data) {
   try {
-    const response = await fetch("/users/register", {
+    const response = await fetch("http://:5000/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(data),
     });
+    const result = await response.json();
 
-    return await response.json();
+    if (!response.ok) {
+      return { error: true, message:result.message};
+    }
+
+    return result;
   } catch (error) {
     console.error("Error during registration:", error);
   }
@@ -17,7 +22,7 @@ export async function register(data) {
 
 export async function login(data) {
   try {
-    const response = await fetch("/users/login", {
+    const response = await fetch("http://:5000/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

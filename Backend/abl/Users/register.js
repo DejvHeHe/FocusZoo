@@ -39,6 +39,28 @@ async function Register(req,res)
 
         }
         const registerUser=await usersDao.register(user)
+
+        if(registerUser.status=false)
+        {
+            if(registerUser.code==="EmailAlreadyRegistered")
+            {
+                return res.status(400).json({                
+                    code: registerUser.code,
+                    message:registerUser.error,                
+
+                });
+
+            }
+            else{
+                return res.status(400).json({                
+                    message:registerUser.error,                
+
+                });
+                
+
+            }
+            
+        }
         res.json(registerUser)
 
 
