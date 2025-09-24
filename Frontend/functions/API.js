@@ -29,14 +29,13 @@ export async function login(data) {
       },
       body: JSON.stringify(data),
     });
+     
 
+    const result = await response.json();    
+    console.log(result)
     if (!response.ok) {
-      const errorResponse = await response.json();
-      console.error("Login failed:", errorResponse.message || response.statusText);
-      return null;
+      return { error: true, message:result.message};
     }
-
-    const result = await response.json();
 
     // ✅ Ensure you're saving only the token string
     if (typeof result.token === "string") {

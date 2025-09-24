@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { login } from '../functions/API';
+import Toast from 'react-native-toast-message';
 
 export default function LoginPage() {
   const [passwordVisibility, setPasswordVisibility] = useState(false);
@@ -16,8 +17,22 @@ export default function LoginPage() {
       email:email,
       password:password
     }
-    await login(data);
-    navigation.navigate("MainPage")
+    const loginResult= await login(data);
+    if(loginResult.error)
+    {
+      Toast.show({
+        type:"error",
+        text1:loginResult.message,
+        position:"top",    
+      })    
+
+
+    }
+    else{
+      navigation.navigate("Main")
+
+    }
+    
   }
 
   return (

@@ -58,23 +58,23 @@ async function register(user) {
     return { success: false, error: "Something went wrong." };
   }
 }
-async function login(user) {
+async function login(user,userFound) {
   try{
     await ensureConnection()
     const jwt = require('jsonwebtoken');
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-    const userFound=await findByEmail(user.email)
+    
     const isMatch=await bcrypt.compare(user.password, userFound.passwordHash);
     if(!isMatch)
     {
-      return { success: false, error: "You have wrong password" };
+      return { success: false, error: "You have wrong password",code: "PasswordNotMatch" };
     }
     
     const token = jwt.sign(
       { userId: userFound._id },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '30d' }
     );
 
     return token
@@ -96,11 +96,16 @@ async function findByEmail(email)//find by email
   .findOne({email})
   if (!user) {
   
-    return { success: false, error: "This user doesnt exist" };
+    return { success: false, error: "This user doesnt exist" ,code: "EmailIsntRegistered" };
   }
   return user;
 
 
+
+}
+async function resetPassword(email)
+{
+  
 }
 
 

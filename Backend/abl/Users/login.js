@@ -27,7 +27,23 @@ async function Login(req,res)
 
             });
         }
-        const token=await usersDao.login(user)
+        const userFound=await usersDao.findByEmail(user.email)
+        if(userFound.error)
+        {
+            return res.status(400).json({
+                code:userFound.code,
+                message:userFound.error
+            });
+        }
+        const token=await usersDao.login(user,userFound)
+
+        if(token.error)
+        {
+            return res.status(400).json({
+                code:token.code,
+                message:token.error
+            });
+        }
         res.status(200).json({ token }); // ✅ Proper JSON format
 
 
