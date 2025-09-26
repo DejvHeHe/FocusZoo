@@ -1,6 +1,7 @@
 require('dotenv').config(); // Load env vars
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
+
 
 
 const uri = process.env.MONGO_URI;
@@ -103,10 +104,34 @@ async function findByEmail(email)//find by email
 
 
 }
-async function resetPassword(email)
-{
-  
+async function saveResetToken(userId, resetToken, expiry) {
+  try {
+    await ensureConnection();
+
+    const result = await client
+      .db("FocusZoo")
+      .collection("users")
+      .updateOne(
+        { _id: new ObjectId(userId) }, // make sure you use ObjectId
+        { 
+          $set: { 
+            resetToken: resetToken,
+            resetTokenExpiry: expiry 
+          } 
+        }
+      );
+
+    if (result.modifiedCount === 1) {
+      return { success: true };
+    } else {
+      return { success: false, error: "User not found or not updated." };
+    }
+  } catch (err) {
+    console.error("Error saving reset token:", err);
+    return { success: false, error: "Something went wrong." };
+  }
 }
+
 
 
 
@@ -114,6 +139,7 @@ module.exports = {
   register,
   login,
   findByEmail,
+  saveResetToken
 
   
 

@@ -1,13 +1,16 @@
 import { Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { passwordReset } from '../functions/API';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState("");
   const navigation = useNavigation();
 
-  const onSendReset = () => {
+  const onSendReset = async() => {
+    const data={email:email}
     console.log("Send reset link to:", email);
+    await passwordReset(data)
   };
 
   return (

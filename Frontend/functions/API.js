@@ -51,3 +51,25 @@ export async function login(data) {
     return null;
   }
 }
+export async function passwordReset(data) {
+  try {
+    const response = await fetch("http://:5000/users/reset-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    console.log(response)
+    console.log(result)
+
+    if (!response.ok) {
+      return { error: true, message:result.message};
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error during registration:", error);
+  }
+}
