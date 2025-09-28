@@ -53,7 +53,7 @@ export async function login(data) {
 }
 export async function passwordReset(data) {
   try {
-    const response = await fetch("http://:5000/users/reset-password", {
+    const response = await fetch("http://:5000/users/enerate-password-reset-code", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

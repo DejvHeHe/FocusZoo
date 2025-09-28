@@ -1,28 +1,33 @@
-require("dotenv").config(); // <-- loads variables from .env
 const nodemailer = require("nodemailer");
 
 async function sendEmail(to, subject, text) {
   try {
+    // create a testing account from ethereal
+    const testAccount = await nodemailer.createTestAccount();
+
+    // create a transporter
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false, // true for port 465
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // should be an App Password if using Gmail
-      },
-      tls: {
-        rejectUnauthorized: false, // ⚠️ only for development/testing
+        user: testAccount.user,
+        pass: testAccount.pass,
       },
     });
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    // send mail
+    const info = await transporter.sendMail({
+      from: '"FocusZoo Support" <no-reply@focuszoo.com>', // sender
       to,
       subject,
       text,
     });
 
-    console.log("Email sent successfully to:", to);
-    return { success: true };
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+    return { success: true, preview: nodemailer.getTestMessageUrl(info) };
   } catch (err) {
     console.error("Error sending email:", err);
     return { success: false, error: err.message };

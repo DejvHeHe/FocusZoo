@@ -95,16 +95,13 @@ async function findByEmail(email)//find by email
   .db("FocusZoo")
   .collection("users")
   .findOne({email})
-  if (!user) {
   
-    return { success: false, error: "This user doesnt exist" ,code: "EmailIsntRegistered" };
-  }
   return user;
 
 
 
 }
-async function saveResetToken(userId, resetToken, expiry) {
+async function saveResetCode(userId, resetCode, expiry) {
   try {
     await ensureConnection();
 
@@ -115,8 +112,8 @@ async function saveResetToken(userId, resetToken, expiry) {
         { _id: new ObjectId(userId) }, // make sure you use ObjectId
         { 
           $set: { 
-            resetToken: resetToken,
-            resetTokenExpiry: expiry 
+            resetCode: resetCode,
+            resetCodeExpiry: expiry 
           } 
         }
       );
@@ -131,6 +128,33 @@ async function saveResetToken(userId, resetToken, expiry) {
     return { success: false, error: "Something went wrong." };
   }
 }
+async function changePassword(userId,newpassword)
+{
+  try{
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newpassword, saltRounds);
+    await ensureConnection();
+    const result = await client
+      .db("FocusZoo")
+      .collection("users")
+      .updateOne(
+        { _id: new ObjectId(userId) }, // make sure you use ObjectId
+        { 
+          $set: { 
+            passwordHash: hashedPassword,            
+          } 
+        }
+      
+
+      );
+
+
+  }
+  catch (err) {
+    console.error("Error saving reset token:", err);
+    return { success: false, error: "Something went wrong." };
+  }
+}
 
 
 
@@ -139,7 +163,8 @@ module.exports = {
   register,
   login,
   findByEmail,
-  saveResetToken
+  saveResetCode,
+  changePassword,
 
   
 

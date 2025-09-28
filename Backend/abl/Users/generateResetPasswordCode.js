@@ -26,7 +26,7 @@ async function ForgotPassword(req,res)
                 validationError: ajv.errors,
             });
         }
-        const user=usersDao.findByEmail(email.email)
+        const user=await usersDao.findByEmail(email.email)
         if(!user)
         {
             return res.status(400).json({
@@ -34,12 +34,12 @@ async function ForgotPassword(req,res)
                 message:"User with this email doesnt exist"
             })
         }
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        const expiry = Date.now() + 15 * 60 * 1000;
-        await usersDao.saveResetToken(user._id, resetToken, expiry);
+        const resetCode = crypto.randomBytes(4).toString("hex"); 
+        const expiry = new Date(Date.now() + 15 * 60 * 1000);
+        await usersDao.saveResetCode(user._id, resetCode, expiry);
 
-        const resetLink = `http://localhost:5000/reset-password?token=${resetToken}`;
-        await sendEmail(user.email, "Password Reset", `Click here: ${resetLink}`);
+        
+        await sendEmail(user.email, "Password Reset", `Code: ${resetCode}`);
 
         res.json({ message: "Password reset email sent." });
 
