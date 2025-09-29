@@ -12,7 +12,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StarsProvider } from './context/StarsContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PasswordResetPage from './pages/PasswordResetPage';
+import PasswordResetPage1 from './pages/PasswordResetPage1';
+import PasswordResetPage2 from './pages/PasswordResetPage2';
 
 
 const animalsUnlocked = require('./assets/animals_unlocked.json');
@@ -75,7 +76,8 @@ export default function App() {
           <Stack.Screen name="Main" component={MainPage} />
           <Stack.Screen name="MyAnimals" component={MyAnimals}/>
           <Stack.Screen name="UnlockAnimal" component={UnlockAnimalsPage}/>
-          <Stack.Screen name="PasswordReset" component={PasswordResetPage}/>
+          <Stack.Screen name="PasswordReset1" component={PasswordResetPage1}/>
+          <Stack.Screen name="PasswordReset2" component={PasswordResetPage2}/>
         </Stack.Navigator>
         <Toast />
         <StatusBar style="auto" />

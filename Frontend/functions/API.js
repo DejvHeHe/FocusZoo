@@ -51,9 +51,9 @@ export async function login(data) {
     return null;
   }
 }
-export async function passwordReset(data) {
+export async function generatePasswordResetCode(data) {
   try {
-    const response = await fetch("http://:5000/users/enerate-password-reset-code", {
+    const response = await fetch("http://:5000/users/generate-password-reset-code", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -61,8 +61,7 @@ export async function passwordReset(data) {
       body: JSON.stringify(data),
     });
     const result = await response.json();
-    console.log(response)
-    console.log(result)
+    
 
     if (!response.ok) {
       return { error: true, message:result.message};
@@ -70,6 +69,27 @@ export async function passwordReset(data) {
 
     return result;
   } catch (error) {
-    console.error("Error during registration:", error);
+    console.error("Error generating coden:", error);
+  }
+}
+export async function resetPassword(data) {
+  try {
+    const response = await fetch("http://:5000/users/reset-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    
+
+    if (!response.ok) {
+      return { error: true, message:result.message};
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error during reset password:", error);
   }
 }

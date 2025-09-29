@@ -1,76 +1,85 @@
-//RegisterPage
+// PasswordResetPage2
 import { Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute  } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { register, login } from '../functions/API';
 import Toast from 'react-native-toast-message';
+import { resetPassword } from '../functions/API';
 
-export default function RegisterPage() {
-  const [passwordVisibility, setPasswordVisibility] = useState(false);
+export default function PasswordResetPage2() {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordAgain, setPasswordAgain] = useState(""); 
-  const [registerFailed, setRegisterFailed] = useState(false);
+  const [newpassword, setNewPassword] = useState("");
+  const [newPasswordAgain, setNewPasswordAgain] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [checkFailed, setCheckFailed] = useState(false);
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
+  const route = useRoute();
+  const { email } = route.params;
 
-  const onRegister = async () => { 
-    if(password !== passwordAgain) {
+  const onVerifyReset = async () => {
+    if (newpassword !== newPasswordAgain) {
       Toast.show({
         type: 'error',
         text1: "Passwords don't match",
         position: 'top',
       });
-      setRegisterFailed(true);
+      setCheckFailed(true);
       return;
     }
+    setCheckFailed(false);
 
-    setRegisterFailed(false);
-    const data = { email, password };
-    const registerResult=await register(data);
-    console.log(registerResult)
-    if(registerResult.error)
-    {     
-        Toast.show({
-        type:"error",
-        text1:registerResult.message,
-        position:"top",    
-        })      
-      
+    const data = {
+      email: email,      
+      newPassword: newpassword,
+      resetCode: resetCode,
+    };
 
-    }
-      
-    else{
-      const loginResult=await login(data);
-      navigation.navigate('Main');
-
-    }
     
-  }
+    const result = await resetPassword(data);
+    if(result.error)
+    {
+        Toast.show({
+            type:"error",
+            text1:result.message,
+            position:"top",    
+        }) 
+
+    }
+    Toast.show({
+            type:"info",
+            text1:"You passwor was reseted",
+            position:"top",    
+        }) 
+
+    navigation.navigate("Login");
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Sign Up</Text>
+        <Text style={styles.headerText}>Reset Your Password</Text>
+        <Text style={styles.instructionText}>
+          Enter your verification code, and your new password
+        </Text>
       </View>
 
       <View style={styles.contentContainer}>
+        {/* Verification Code */}
         <TextInput
           style={styles.input}
-          placeholder="E-mail"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChange={e => setEmail(e.nativeEvent.text)}
+          placeholder="Verification code"
+          value={resetCode}
+          onChange={e => setResetCode(e.nativeEvent.text)}
         />
 
-        <View style={registerFailed ? styles.passwordInputContainerFailed : styles.passwordInputContainer}>
+        {/* New Password */}
+        <View style={checkFailed ? styles.passwordInputContainerFailed : styles.passwordInputContainer}>
           <TextInput
             style={styles.passwordInput}
             placeholder="Password"
             secureTextEntry={!passwordVisibility}
-            value={password}
-            onChange={e => setPassword(e.nativeEvent.text)}
+            value={newpassword}
+            onChange={e => setNewPassword(e.nativeEvent.text)}
           />
           <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
             <Ionicons
@@ -81,13 +90,14 @@ export default function RegisterPage() {
           </TouchableOpacity>
         </View>
 
-        <View style={registerFailed ? styles.passwordInputContainerFailed : styles.passwordInputContainer}>
+        {/* Confirm Password */}
+        <View style={checkFailed ? styles.passwordInputContainerFailed : styles.passwordInputContainer}>
           <TextInput
             style={styles.passwordInput}
             placeholder="Password again"
             secureTextEntry={!passwordVisibility}
-            value={passwordAgain}
-            onChange={e => setPasswordAgain(e.nativeEvent.text)}
+            value={newPasswordAgain}
+            onChange={e => setNewPasswordAgain(e.nativeEvent.text)}
           />
           <TouchableOpacity onPress={() => setPasswordVisibility(!passwordVisibility)}>
             <Ionicons
@@ -98,9 +108,13 @@ export default function RegisterPage() {
           </TouchableOpacity>
         </View>
 
-        <Pressable style={styles.buttonPrimary} onPress={onRegister}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+        <Pressable style={styles.buttonPrimary} onPress={onVerifyReset}>
+          <Text style={styles.buttonText}>Confirm Reset</Text>
         </Pressable>
+
+        <TouchableOpacity style={styles.backToLogin} onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.backText}>Back to Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -124,10 +138,17 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 10,
     textAlign: 'center',
   },
+  instructionText: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
   contentContainer: {
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
     backgroundColor: 'white',
     borderWidth: 2,
@@ -141,7 +162,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#388E3C',
     borderRadius: 12,
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 10,
     paddingVertical: 10,
     fontSize: 16,
@@ -183,6 +204,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: "600",
+  },
+  backToLogin: {
+    marginTop: 15,
+  },
+  backText: {
+    color: '#388E3C',
+    fontSize: 16,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });

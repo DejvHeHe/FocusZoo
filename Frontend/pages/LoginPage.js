@@ -79,7 +79,7 @@ export default function LoginPage() {
         </Pressable>
       </View>
       <View style={styles.forgotPassword}>
-        <Text onPress={()=>navigation.navigate('PasswordReset')}>Forgot password?</Text>
+        <Text onPress={()=>navigation.navigate('PasswordReset1')}>Forgot password?</Text>
       </View>
     </View>
   );

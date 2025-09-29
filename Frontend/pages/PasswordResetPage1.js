@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { passwordReset } from '../functions/API';
+import { generatePasswordResetCode } from '../functions/API';
+import Toast from 'react-native-toast-message';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState("");
@@ -10,7 +11,19 @@ export default function PasswordResetPage() {
   const onSendReset = async() => {
     const data={email:email}
     console.log("Send reset link to:", email);
-    await passwordReset(data)
+    const result=await generatePasswordResetCode(data)
+    if(result.error)
+    {
+      Toast.show({
+        type:"error",
+        text1:result.message,
+        position:"top",    
+      }) 
+
+    }
+    else{
+      navigation.navigate("PasswordReset2", { email: email });
+    }
   };
 
   return (
@@ -18,7 +31,7 @@ export default function PasswordResetPage() {
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Reset Your Password</Text>
         <Text style={styles.instructionText}>
-          Forgot your password? Don’t worry! Enter the email address associated with your account, and we’ll send you a link to create a new password.
+          Forgot your password? Don’t worry! Enter the email address associated with your account, and we’ll send you a code to create a new password.
         </Text>
       </View>
 
