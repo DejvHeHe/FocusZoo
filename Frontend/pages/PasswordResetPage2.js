@@ -30,7 +30,7 @@ export default function PasswordResetPage2() {
 
     const data = {
       email: email,      
-      newPassword: newpassword,
+      newpassword: newpassword,
       resetCode: resetCode,
     };
 
@@ -38,20 +38,25 @@ export default function PasswordResetPage2() {
     const result = await resetPassword(data);
     if(result.error)
     {
+      console.log(result);
         Toast.show({
             type:"error",
             text1:result.message,
             position:"top",    
-        }) 
+        }) ;
 
     }
-    Toast.show({
+    else{
+      Toast.show({
             type:"info",
-            text1:"You passwor was reseted",
+            text1:"You password was reseted",
             position:"top",    
-        }) 
+        });
 
     navigation.navigate("Login");
+
+    }
+    
   };
 
   return (

@@ -29,11 +29,11 @@ async function ResetPassword(req,res)
             });
         }
         const userFound=await usersDao.findByEmail(user.email)
-        if(userFound.error)
+        if(!userFound)
         {
             return res.status(400).json({
-                code:userFound.code,
-                message:userFound.error
+                code:"emailIsNotValid",
+                message:"User with this email doesnt exist"
             });
         }
        if (userFound.resetCode !== user.resetCode) {
