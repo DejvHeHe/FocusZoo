@@ -1,17 +1,40 @@
 // Header.js
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useStars } from '../context/StarsContext'; // ✅ import context hooku
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Header() {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState(false);
   const navigation = useNavigation();
-  const { stars } = useStars(); // ✅ bereme stars přímo z contextu
+  const { stars } = useStars(); // ✅ hvězdy z contextu
 
   const toggleModal = () => setModalVisible(!isModalVisible);
+
+  const checkLoggedIn = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (token) {
+      setLoggedIn(true);
+    } else {
+      setLoggedIn(false);
+    }
+  };
+
+  const Logout = async () => {
+    await AsyncStorage.removeItem("token");
+    setLoggedIn(false);
+  };
+
+  // ✅ kontrola login stavu pokaždé, když se vrátíme na tuhle obrazovku
+  useFocusEffect(
+    useCallback(() => {
+      checkLoggedIn();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -38,12 +61,26 @@ export default function Header() {
           <Pressable onPress={() => { toggleModal(); navigation.navigate('Main'); }}>
             <Text style={styles.menuItem}>🏠 Home</Text>
           </Pressable>
+
           <Pressable onPress={() => { toggleModal(); navigation.navigate('MyAnimals'); }}>
             <Text style={styles.menuItem}>🐾 My animals</Text>
           </Pressable>
+
           <Pressable onPress={() => { toggleModal(); navigation.navigate('UnlockAnimal'); }}>
             <Text style={styles.menuItem}>🔒 Unlock animals</Text>
           </Pressable>
+
+          {!isLoggedIn && (
+            <Pressable onPress={() => { toggleModal(); navigation.navigate('Login'); }}>
+              <Text style={styles.menuItem}>🔑 Login</Text>
+            </Pressable>
+          )}
+
+          {isLoggedIn && (
+            <Pressable onPress={() => { toggleModal(); Logout(); }}>
+              <Text style={styles.menuItem}>🚪 Sign out</Text>
+            </Pressable>
+          )}
         </View>
       </Modal>
     </View>
